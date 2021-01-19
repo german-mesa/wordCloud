@@ -98,27 +98,28 @@ def word_cloud_forth(data):
 
 
 # Join all reviews of each country with flag image mask
-def word_cloud_fifth(data, country):
-    text = " ".join(review for review in data[data["country"] == country].description)
+def word_cloud_fifth(data, countries):
+    for country in countries:
+        text = " ".join(review for review in data[data["country"] == country].description)
 
-    stopwords = set(STOPWORDS)
-    stopwords.update(["drink", "now", "wine", "flavor", "flavors"])
+        stopwords = set(STOPWORDS)
+        stopwords.update(["drink", "now", "wine", "flavor", "flavors"])
 
-    mask = np.array(Image.open(os.path.join(os.getcwd(), 'images', 'masks', country.lower() + '.png')))
-    word_cloud = WordCloud(stopwords=stopwords,
-                           background_color="white",
-                           mode="RGBA",
-                           max_words=1000,
-                           mask=mask).generate(text)
+        mask = np.array(Image.open(os.path.join(os.getcwd(), 'images', 'masks', country.lower() + '.png')))
+        word_cloud = WordCloud(stopwords=stopwords,
+                               background_color="white",
+                               mode="RGBA",
+                               max_words=1000,
+                               mask=mask).generate(text)
 
-    # create coloring from image
-    image_colors = ImageColorGenerator(mask)
+        # create coloring from image
+        image_colors = ImageColorGenerator(mask)
 
-    plt.figure(figsize=[7, 7])
-    plt.imshow(word_cloud.recolor(color_func=image_colors), interpolation="bilinear")
-    plt.axis("off")
-    plt.savefig(os.path.join(os.getcwd(), 'images', 'outputs',  country.lower() + '_wine.png'), format="png")
-    plt.show()
+        plt.figure(figsize=[7, 7])
+        plt.imshow(word_cloud.recolor(color_func=image_colors), interpolation="bilinear")
+        plt.axis("off")
+        plt.savefig(os.path.join(os.getcwd(), 'images', 'outputs',  country.lower() + '_wine.png'), format="png")
+        plt.show()
 
 
 if __name__ == '__main__':
@@ -138,5 +139,5 @@ if __name__ == '__main__':
     word_cloud_forth(df)
 
     # With flag image mask
-    word_cloud_fifth(df, "US")
-    word_cloud_fifth(df, "Spain")
+    word_cloud_fifth(df, ["US", "Spain"])
+
