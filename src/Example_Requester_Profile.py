@@ -31,12 +31,12 @@ def transform_mask(mask_name):
 
 
 def word_cloud_profile(data):
-    dictionary = dict(df.values.tolist())
+    dictionary = dict(data.values.tolist())
 
     word_cloud = WordCloud(max_font_size=50, max_words=100, background_color="white")
     word_cloud.generate_from_frequencies(dictionary)
 
-    plt.figure()
+    plt.figure(figsize=[20, 10])
     plt.imshow(word_cloud, interpolation="bilinear")
     plt.axis("off")
     plt.show()
@@ -45,13 +45,15 @@ def word_cloud_profile(data):
 
 
 def word_cloud_profile_mask(data, mask_name):
-    dictionary = dict(df.values.tolist())
+    dictionary = dict(data.values.tolist())
 
-    word_cloud = WordCloud(background_color="white",
-                           max_words=1000,
-                           mask=transform_mask(mask_name),
-                           contour_width=3,
-                           contour_color='firebrick')
+    word_cloud = WordCloud(
+        background_color="white",
+        max_words=1000,
+        mask=transform_mask(mask_name),
+        contour_width=3,
+        contour_color='firebrick'
+    )
 
     word_cloud.generate_from_frequencies(dictionary)
 
@@ -64,7 +66,7 @@ def word_cloud_profile_mask(data, mask_name):
 
 
 def word_cloud_profile_flag(data, countries):
-    dictionary = dict(df.values.tolist())
+    dictionary = dict(data.values.tolist())
 
     for country in countries:
         image = Image.open(os.path.join(os.getcwd(), 'images', 'masks', country.lower() + '.png'))
@@ -81,7 +83,7 @@ def word_cloud_profile_flag(data, countries):
         # create coloring from image
         image_colors = ImageColorGenerator(mask)
 
-        plt.figure(figsize=[7, 7])
+        plt.figure(figsize=[20, 10])
         plt.imshow(word_cloud.recolor(color_func=image_colors), interpolation="bilinear")
         plt.axis("off")
         plt.show()
@@ -97,6 +99,9 @@ if __name__ == '__main__':
 
     # Start with one review
     word_cloud_profile(df)
+
+    # With flag image mask
+    word_cloud_profile_mask(df, "wine_mask.png")
 
     # With flag image mask
     word_cloud_profile_flag(df, ["Spain", "Europe"])
