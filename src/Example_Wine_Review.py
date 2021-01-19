@@ -59,7 +59,7 @@ def word_cloud_two(data):
 
 # Combine all wine reviews
 def word_cloud_three(data):
-    text = " ".join(review for review in df.description)
+    text = " ".join(review for review in data.description)
 
     stopwords = set(STOPWORDS)
     stopwords.update(["drink", "now", "wine", "flavor", "flavors"])
