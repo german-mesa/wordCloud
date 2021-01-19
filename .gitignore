@@ -138,6 +138,7 @@ dmypy.json
 cython_debug/
 
 # Do not include this for this project
+/.idea
 datasets/
 checkpoints/
 credentials/
