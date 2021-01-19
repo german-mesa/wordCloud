@@ -105,7 +105,10 @@ def word_cloud_fifth(data, countries):
         stopwords = set(STOPWORDS)
         stopwords.update(["drink", "now", "wine", "flavor", "flavors"])
 
-        mask = np.array(Image.open(os.path.join(os.getcwd(), 'images', 'masks', country.lower() + '.png')))
+        image = Image.open(os.path.join(os.getcwd(), 'images', 'masks', country.lower() + '.png'))
+        image_rgb = image.convert('RGB')
+
+        mask = np.array(image_rgb)
         word_cloud = WordCloud(stopwords=stopwords,
                                background_color="white",
                                mode="RGBA",
@@ -139,5 +142,5 @@ if __name__ == '__main__':
     word_cloud_forth(df)
 
     # With flag image mask
-    word_cloud_fifth(df, ["US", "Spain"])
+    word_cloud_fifth(df, ["US", "Spain", "France"])
 
