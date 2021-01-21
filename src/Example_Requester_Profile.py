@@ -33,7 +33,9 @@ def transform_mask(mask_name):
 def word_cloud_profile(data):
     dictionary = dict(data.values.tolist())
 
-    word_cloud = WordCloud(max_font_size=50, max_words=100, background_color="white")
+    word_cloud = WordCloud(max_font_size=50,
+                           max_words=100,
+                           background_color="white")
     word_cloud.generate_from_frequencies(dictionary)
 
     plt.figure(figsize=[20, 10])
