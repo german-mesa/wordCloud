@@ -145,5 +145,6 @@ credentials/
 models/
 drivers/
 output/
+drivers/
 images/outputs
 *.h5
