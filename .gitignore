@@ -148,3 +148,4 @@ output/
 drivers/
 images/outputs
 *.h5
+/input/
