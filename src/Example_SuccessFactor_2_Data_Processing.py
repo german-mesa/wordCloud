@@ -18,11 +18,11 @@ csv_columns = [
 ]
 
 
-def read_search_page():
+def read_data_extracted_page(file_name):
     # Read file stored into local repository - this needs to be changed to HTTP search in the future
-    url_local_file_response = os.path.join(os.getcwd(), "input", "response.html")
+    url_local_file_response = os.path.join(os.getcwd(), "input", file_name)
 
-    print("Scrapping search page")
+    print("Scrapping file {0}".format(url_local_file_response))
     file = open(url_local_file_response, "r")
     content = file.read()
 
@@ -40,7 +40,7 @@ def read_search_page():
         job_detail = {
             'Title': cell_detail.find("a", {"class": "jobTitle"}).text,
             'Requisition ID': job_attributes[0].text,
-            'Posted Date': job_attributes[1].text,
+            'Posted Date': job_attributes[1].text.replace("Posted on ", ""),
             'Recruiter': job_attributes[2].text,
             'Region': job_attributes[3].text,
             'Country': job_attributes[4].text,
@@ -53,7 +53,7 @@ def read_search_page():
 
         job_result_list.append(job_detail)
 
-    print("End of scrapping")
+    print("End of scrapping {0}".format(url_local_file_response))
 
     return job_result_list
 
@@ -67,7 +67,7 @@ def compose_final_report(search_result):
     print("Composing final export")
     try:
         with open(url_local_file_report, 'w') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+            writer = csv.DictWriter(csvfile, fieldnames=csv_columns, delimiter=';')
             writer.writeheader()
 
             for data in search_result:
@@ -82,8 +82,12 @@ def compose_final_report(search_result):
 
 
 def main():
-    # Read open positions
-    search_result = read_search_page()
+    search_result = []
+
+    # Read all the files into the input directory
+    for file in os.listdir(os.path.join(os.getcwd(), "input")):
+        if file.endswith(".html"):
+            search_result.extend(read_data_extracted_page(file))
 
     # Create report using open positions
     compose_final_report(search_result)
