@@ -5,6 +5,9 @@ import os
 import time
 import datetime
 
+from os import listdir
+from os.path import isfile, join
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
@@ -49,10 +52,11 @@ def chrome_head_full_mode():
             # Export page for later use
             page_counter = page_counter + 1
             export_page_source(driver.page_source, page_counter)
+            time.sleep(15)
 
             # Click on next button
             WebDriverWait(driver, 15).until(EC.element_to_be_clickable((By.ID, '36:_next'))).click()
-            time.sleep(20)
+            time.sleep(15)
 
     except NoSuchElementException:
         print('Could not find the element')
@@ -79,9 +83,26 @@ def export_page_source(page_source, page_counter):
         print("I/O error")
 
 
+def move_output_files():
+    print("Moving files to input directory...")
+
+    source_dir = os.path.join(os.getcwd(), 'output')
+    destination_dir = os.path.join(os.getcwd(), 'input')
+
+    for file in [f for f in listdir(source_dir) if isfile(join(source_dir, f))]:
+        source_file = os.path.join(source_dir, file)
+        destination_file = os.path.join(destination_dir, file)
+
+        print(f"Moving...{source_file} to {destination_file}")
+        os.rename(source_file, destination_file)
+
+
 def main():
     # Run chrome at head full mode
     chrome_head_full_mode()
+
+    # Moving files to directory for next step in the process
+    move_output_files()
 
 
 if __name__ == '__main__':

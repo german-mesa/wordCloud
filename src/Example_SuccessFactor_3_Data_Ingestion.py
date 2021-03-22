@@ -50,7 +50,7 @@ def main():
     with ConnectionContext(options['address'], options['port'], options['user'], options['password']) as connection:
         # Create SAP HANA Cloud table from pandas dataframe
         positions_df = pd.read_csv(
-            filepath_or_buffer=os.path.join(os.getcwd(), 'datasets', 'export.csv'),
+            filepath_or_buffer=os.path.join(os.getcwd(), 'datasets', 'open_positions.csv'),
             sep=';',
             parse_dates=True
         )

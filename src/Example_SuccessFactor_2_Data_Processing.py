@@ -62,7 +62,7 @@ def compose_final_report(search_result):
     if not search_result:
         print("Search result is empty")
 
-    url_local_file_report = os.path.join(os.getcwd(), "output", "export.csv")
+    url_local_file_report = os.path.join(os.getcwd(), "datasets", "open_positions.csv")
 
     print("Composing final export")
     try:
