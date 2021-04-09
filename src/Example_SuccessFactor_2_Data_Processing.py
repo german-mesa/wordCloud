@@ -3,6 +3,8 @@ import csv
 
 from bs4 import BeautifulSoup
 
+URL_ROOT = "https://performancemanager5.successfactors.eu"
+
 csv_columns = [
     'Title',
     'Requisition ID',
@@ -14,7 +16,8 @@ csv_columns = [
     'Work Area',
     'Expected Travel',
     'Career Status',
-    'Employment Type'
+    'Employment Type',
+    'Link'
 ]
 
 
@@ -39,6 +42,7 @@ def read_data_extracted_page(file_name):
 
         job_detail = {
             'Title': cell_detail.find("a", {"class": "jobTitle"}).text,
+            'Link': URL_ROOT + cell_detail.find("a", {"class": "jobTitle"}).attrs['href'],
             'Requisition ID': job_attributes[0].text,
             'Posted Date': job_attributes[1].text.replace("Posted on ", ""),
             'Recruiter': job_attributes[2].text,

@@ -5,6 +5,11 @@ from segno import helpers
 input_data = {
     'user_name': 'Mesa, German',
     'display_name': 'German Mesa',
+    'org': 'SAP',
+    'street': 'Torrelaguna 77',
+    'city': 'Madrid',
+    'region':  'Madrid',
+    'country': 'Spain',
     'email': [
         'german.mesa@sap.com'
     ],
@@ -36,6 +41,11 @@ def create_vCard():
     qr = helpers.make_vcard(
         name=input_data['user_name'],
         displayname=input_data['display_name'],
+        org=input_data['org'],
+        street=input_data['street'],
+        city=input_data['city'],
+        region=input_data['region'],
+        country=input_data['country'],
         email=input_data['email'],
         phone=input_data['phone'],
         url=input_data['url']
