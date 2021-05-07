@@ -13,7 +13,7 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
 WAIT_TIME = 15
-ITEMS_PER_PAGE = "10"
+ITEMS_PER_PAGE = "150"
 DRIVER_PATH = os.path.join(os.getcwd(), 'drivers', 'chromedriver')
 
 url_navigation_list = [
@@ -46,7 +46,6 @@ csv_columns = [
 def scraping_open_positions():
     driver = webdriver.Chrome(executable_path=DRIVER_PATH)
     driver.maximize_window()
-    driver.implicitly_wait(WAIT_TIME)
 
     for url in url_navigation_list:
         driver.get(url)
@@ -58,10 +57,13 @@ def scraping_open_positions():
 
         # Page size set to 150 elements
         select = Select(
-            WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located((By.ID, "37:")))
+            WebDriverWait(driver, WAIT_TIME).until(EC.element_to_be_clickable((By.ID, "37:")))
         )
         select.select_by_visible_text(ITEMS_PER_PAGE)
-        time.sleep(WAIT_TIME)
+        time.sleep(5)
+
+        # Initializing the counter
+        job_count = 0
 
         # Let's scrap all the data in the page
         while True:
@@ -75,9 +77,13 @@ def scraping_open_positions():
 
             # Loop through all the opportunities and get content
             for job_result_item in job_result_list:
+                # Scrapping job
+                job_count = job_count + 1
+                print(f"Scrapping job {job_count}...{job_result_item['Title']}")
+
                 # Navigate to the position
                 element = WebDriverWait(driver, WAIT_TIME).until(
-                    EC.presence_of_element_located((By.LINK_TEXT, job_result_item['Title']))
+                    EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, job_result_item['Title']))
                 )
                 element.click()
 
@@ -85,45 +91,28 @@ def scraping_open_positions():
                 scrap_job_details_from_page(job_result_item, driver.page_source)
 
                 # Return to the job list
-                element = driver.find_element_by_css_selector(
-                    ".globalFloatRight:nth-child(1) > .globalSecondaryButton:nth-child(1)")
+                element = driver.find_element_by_css_selector(".globalFloatRight:nth-child(1) > "
+                                                              ".globalSecondaryButton:nth-child(1)")
                 element.click()
+
+                # Wait sometime for page to be reloaded
+                time.sleep(WAIT_TIME)
 
             # Compose final export
             compose_final_report(job_result_list)
 
             # Click on next button
-            WebDriverWait(driver, WAIT_TIME).until(EC.element_to_be_clickable((By.ID, '36:_next'))).click()
+            element = WebDriverWait(driver, WAIT_TIME).until(EC.element_to_be_clickable((By.ID, "36:_next")))
+            element.click()
+
+            # Wait sometime for page to be reloaded
             time.sleep(WAIT_TIME)
 
     except NoSuchElementException:
         print('Could not find the element')
 
-    except TimeoutException:
-        print('Timeout ')
-
-
-def scrap_job_details_from_page(job_result_item, page_source):
-    soup = BeautifulSoup(page_source, features="lxml")
-
-    for field in soup.select('.headerContent > p > span'):
-        for text in str.splitlines(field.text):
-            text = text.replace("&nbsp", "")
-
-            if 'Hiring Manager:' in text:
-                job_result_item['Hiring Manager'] = text.split(':')[1]
-
-            if 'Manager:' in text:
-                job_result_item['Manager'] = text.split(':')[1]
-
-            if 'Job Title:' in text:
-                job_result_item['Job Title'] = text.split(':')[1]
-
-            if 'Career Level:' in text:
-                job_result_item['Career Level'] = text.split(':')[1]
-
-            if 'Grade Level:' in text:
-                job_result_item['Grade Level'] = text.split(':')[1]
+    finally:
+        driver.close()
 
 
 def scrap_job_list_from_page(page_source):
@@ -158,6 +147,29 @@ def scrap_job_list_from_page(page_source):
         job_result_list.append(job_detail)
 
     return job_result_list
+
+
+def scrap_job_details_from_page(job_result_item, page_source):
+    soup = BeautifulSoup(page_source, features="lxml")
+
+    for field in soup.select('.headerContent > p > span'):
+        for text in str.splitlines(field.text):
+            text = text.replace("&nbsp", "")
+
+            if 'Hiring Manager:' in text:
+                job_result_item['Hiring Manager'] = text.split(':')[1]
+
+            if 'Manager:' in text:
+                job_result_item['Manager'] = text.split(':')[1]
+
+            if 'Job Title:' in text:
+                job_result_item['Job Title'] = text.split(':')[1]
+
+            if 'Career Level:' in text:
+                job_result_item['Career Level'] = text.split(':')[1]
+
+            if 'Grade Level:' in text:
+                job_result_item['Grade Level'] = text.split(':')[1]
 
 
 def compose_final_report(search_result):
